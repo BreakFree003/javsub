@@ -22,9 +22,8 @@ def main():
         print("  在 ~/.config/javsub/config 中配置 API key", file=sys.stderr)
         sys.exit(3)
 
-    stem = video.with_suffix("")
-    jp_path = stem.with_suffix(".jp.srt")
-    zh_path = stem.with_suffix(".zh.srt")
+    jp_path = video.with_suffix(".jp.srt")
+    zh_path = video.with_suffix(".zh.srt")
 
     if zh_path.exists():
         print(f"已存在: {zh_path}", file=sys.stderr)

@@ -74,7 +74,7 @@ def parse_response(text):
     return translations, summary, scene
 
 
-def call_api(client, model, messages, thinking=False, max_retries=3):
+def call_api(client, model, messages, thinking=False, max_retries=5):
     kwargs = {
         "model": model,
         "messages": messages,
@@ -104,8 +104,8 @@ def translate_srt(
     api_key,
     base_url,
     model,
-    batch_size=50,
-    max_retries=3,
+    batch_size=30,
+    max_retries=5,
     merge=True,
 ):
     client = OpenAI(api_key=api_key, base_url=base_url)
