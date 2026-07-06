@@ -2,19 +2,24 @@
 
 Mac 上一键转录 + 翻译 JAV 视频的命令行工具。一个命令输出中文字幕。
 
+## 依赖
+
+- Apple Silicon Mac（MLX 依赖）
+- Python 3.10+
+
 ## 安装
 
 ```bash
-git clone https://github.com/BreakFree/javsub.git
+git clone <repo-url>
 cd javsub
 pip install -e .
 ```
 
-## 依赖
+> 首次运行 ASR 会自动下载模型（约 1GB），需要联网。
 
-- Python 3.10+
-- Apple Silicon Mac（MLX 依赖）
-- 兼容 OpenAI 的 API key（用于翻译）
+## 配置
+
+兼容 OpenAI 的 API key（用于翻译）。
 
 ## 配置
 
