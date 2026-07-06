@@ -9,4 +9,6 @@ __pycache__/
 *.pid
 *.srt
 .DS_Store
+javsub-design.md
+javsub-future.md
 docs/superpowers/
