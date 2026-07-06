@@ -11,12 +11,13 @@ def main():
         print(f"用法: {Path(sys.argv[0]).name} <video.mp4>", file=sys.stderr)
         sys.exit(1)
 
+    config = load_config()
+
     video = Path(sys.argv[1])
     if not video.exists():
         print(f"文件不存在: {video}", file=sys.stderr)
         sys.exit(4)
 
-    config = load_config()
     if not config.get("api_key"):
         print("错误: 未设置 API key", file=sys.stderr)
         print("  在 ~/.config/javsub/config 中配置 API key", file=sys.stderr)

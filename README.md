@@ -19,10 +19,6 @@ pip install -e .
 
 ## 配置
 
-兼容 OpenAI 的 API key（用于翻译）。
-
-## 配置
-
 `~/.config/javsub/config`：
 
 ```ini
@@ -32,8 +28,6 @@ base_url=https://api.deepseek.com
 model=deepseek-v4-flash
 asr_model=ph0ryn/Qwen3-ASR-1.7B-JA-MLX-8bit
 ```
-
-环境变量 `JAVSUB_API_KEY` / `JAVSUB_BASE_URL` / `JAVSUB_MODEL` 可覆盖配置文件。
 
 ## 用法
 
