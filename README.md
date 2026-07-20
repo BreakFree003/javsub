@@ -19,14 +19,15 @@ pip install -e .
 
 ## 配置
 
-`~/.config/javsub/config`：
+首次运行会交互式提示配置 API key 和 API 地址，写入：
+
+`~/.config/javsub/config`
 
 ```ini
 [default]
 api_key=sk-xxx
 base_url=https://api.deepseek.com
 model=deepseek-v4-flash
-asr_model=ph0ryn/Qwen3-ASR-1.7B-JA-MLX-8bit
 ```
 
 ## 用法

@@ -1,12 +1,22 @@
 import sys
 from pathlib import Path
 
-from .config import load_config
 from .asr import run_asr
+from .config import load_config
 from .translate import translate_srt
 
 
 def main():
+    try:
+        _run()
+    except SystemExit:
+        raise
+    except Exception as e:
+        print(f"错误: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _run():
     if len(sys.argv) != 2:
         print(f"用法: {Path(sys.argv[0]).name} <video.mp4>", file=sys.stderr)
         sys.exit(1)
@@ -33,7 +43,7 @@ def main():
     if not jp_path.exists():
         print(f"ASR: {video.name}", file=sys.stderr)
         if not run_asr(video, config):
-            sys.exit(1)
+            sys.exit(5)
     else:
         print(f"ASR 已存在: {jp_path.name}", file=sys.stderr)
 

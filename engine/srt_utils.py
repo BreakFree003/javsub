@@ -1,5 +1,5 @@
 import re
-import pathlib
+from pathlib import Path
 
 
 def parse_srt_text(raw):
@@ -18,7 +18,7 @@ def parse_srt_text(raw):
 
 
 def parse_srt(path):
-    raw = pathlib.Path(path).read_text(encoding="utf-8")
+    raw = Path(path).read_text(encoding="utf-8")
     return parse_srt_text(raw)
 
 
@@ -53,21 +53,9 @@ def merge_short_entries(entries, max_len=3, max_gap=0.5, time_merge_gap=0.2):
         if should_merge:
             new_time = last_parts[0] + " --> " + e_parts[1]
             new_text = last[2].rstrip() + e[2].rstrip()
-            buf.append((buf[0][0], new_time, new_text))
-            del buf[-2]
+            buf[0] = (buf[0][0], new_time, new_text)
             continue
         merged.append(buf[0])
         buf = [e]
     merged.append(buf[0])
     return merged
-
-
-def validate_srt(path):
-    try:
-        entries = parse_srt(path)
-        if not entries:
-            return False
-        indices = [e[0] for e in entries]
-        return len(indices) == len(set(indices))
-    except Exception:
-        return False

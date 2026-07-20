@@ -1,4 +1,4 @@
-from engine.srt_utils import parse_srt_text, compose_srt, merge_short_entries, _parse_ts
+from engine.srt_utils import _parse_ts, compose_srt, merge_short_entries, parse_srt_text
 
 SAMPLE = """1
 00:00:01,000 --> 00:00:04,000

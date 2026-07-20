@@ -11,4 +11,6 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install -e ".[test]"
+      - run: ruff check .
+      - run: ruff format --check .
       - run: python -m pytest engine/tests/

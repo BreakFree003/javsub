@@ -1,12 +1,13 @@
 import re
 import sys
 import time
-import pathlib
+from pathlib import Path
+
 from openai import OpenAI
 
-from .srt_utils import parse_srt, compose_srt, merge_short_entries
+from .srt_utils import compose_srt, merge_short_entries, parse_srt
 
-PROMPT_PATH = pathlib.Path(__file__).parent / "final_prompt.txt"
+PROMPT_PATH = Path(__file__).parent / "final_prompt.txt"
 SYSTEM_PROMPT = PROMPT_PATH.read_text(encoding="utf-8").strip()
 
 
@@ -55,8 +56,12 @@ def parse_response(text):
             elif re.match(r"#(\d+)", line):
                 if current_num is not None and current_lines:
                     translations[current_num] = "\n".join(current_lines)
-                current_num = None
+                m2 = re.match(r"#(\d+)", line)
+                current_num = int(m2.group(1)) if m2 else None
                 current_lines = []
+            else:
+                current_lines.append(line)
+                state = "translation_body"
         elif state == "translation_body":
             if re.match(r"#(\d+)", line):
                 if current_num is not None and current_lines:
@@ -74,18 +79,14 @@ def parse_response(text):
     return translations, summary, scene
 
 
-def call_api(client, model, messages, thinking=False, max_retries=5):
+def call_api(client, model, messages, max_retries=5):
     kwargs = {
         "model": model,
         "messages": messages,
         "timeout": 300,
+        "extra_body": {"thinking": {"type": "disabled"}},
+        "temperature": 1.3,
     }
-    if thinking:
-        kwargs["extra_body"] = {"thinking": {"type": "enabled"}}
-        kwargs["reasoning_effort"] = "high"
-    else:
-        kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
-        kwargs["temperature"] = 1.3
 
     for attempt in range(max_retries):
         try:
@@ -127,7 +128,7 @@ def translate_srt(
     total = len(entries)
     n_batches = (total + batch_size - 1) // batch_size
     print(
-        f"  翻译 {pathlib.Path(input_path).name}: {total} 条, {n_batches} 批",
+        f"  翻译 {Path(input_path).name}: {total} 条, {n_batches} 批",
         file=sys.stderr,
     )
 
@@ -194,14 +195,14 @@ def translate_srt(
             break
 
     if had_error:
-        print(f"  出错终止，未写出输出文件", file=sys.stderr)
+        print("  出错终止，未写出输出文件", file=sys.stderr)
         return 1
 
     out_entries = [(e[0], e[1], merged_translations.get(e[0], "")) for e in entries]
-    pathlib.Path(output_path).write_text(compose_srt(out_entries), encoding="utf-8")
+    Path(output_path).write_text(compose_srt(out_entries), encoding="utf-8")
 
     elapsed = time.time() - t_start
-    print(f"  完成: {pathlib.Path(output_path).name}", file=sys.stderr)
+    print(f"  完成: {Path(output_path).name}", file=sys.stderr)
     print(f"  统计: {n_batches} 批, 用时 {elapsed:.1f}s", file=sys.stderr)
     print(f"    prompt tokens:     {total_prompt:>10,}", file=sys.stderr)
     if total_cached:

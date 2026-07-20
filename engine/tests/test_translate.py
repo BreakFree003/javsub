@@ -1,4 +1,4 @@
-from engine.translate import parse_response, build_batch_text
+from engine.translate import parse_response
 
 
 def test_parse_basic():
@@ -60,3 +60,26 @@ Translation>
 def test_parse_empty():
     assert parse_response("") == ({}, "", "")
     assert parse_response("  ") == ({}, "", "")
+
+
+def test_parse_missing_translation_marker():
+    text = """#1
+Translation>
+译文1
+#2
+译文2
+"""
+    trans, summary, scene = parse_response(text)
+    assert trans[1] == "译文1"
+    assert trans[2] == "译文2"
+
+
+def test_parse_number_only_no_translation():
+    text = """#1
+#2
+Translation>
+译文2
+"""
+    trans, summary, scene = parse_response(text)
+    assert trans[2] == "译文2"
+    assert 1 not in trans

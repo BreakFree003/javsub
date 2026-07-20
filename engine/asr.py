@@ -2,6 +2,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+ASR_MODEL = "ph0ryn/Qwen3-ASR-1.7B-JA-MLX-8bit"
+
 
 def run_asr(video_path, config):
     video = Path(video_path)
@@ -13,7 +15,7 @@ def run_asr(video_path, config):
         "mlx-qwen3-asr",
         str(video),
         "--model",
-        config["asr_model"],
+        ASR_MODEL,
         "--language",
         "Japanese",
         "--output-format",
@@ -37,5 +39,5 @@ def run_asr(video_path, config):
         print(f"  -> {jp_srt.name}", file=sys.stderr)
         return True
 
-    print(f"  ASR 失败: 未生成 SRT 文件", file=sys.stderr)
+    print("  ASR 失败: 未生成 SRT 文件", file=sys.stderr)
     return False
