@@ -11,7 +11,7 @@ def _patch_paths(tmp_path, monkeypatch):
 
 def test_interactive_setup(monkeypatch, tmp_path):
     _patch_paths(tmp_path, monkeypatch)
-    answers = iter(["sk-abc", ""])
+    answers = iter(["sk-abc", "", ""])
     monkeypatch.setattr(builtins, "input", lambda _: next(answers))
 
     result = config.interactive_setup()
@@ -30,7 +30,7 @@ def test_interactive_setup(monkeypatch, tmp_path):
 
 def test_interactive_setup_empty_api_key_retries(monkeypatch, tmp_path):
     _patch_paths(tmp_path, monkeypatch)
-    answers = iter(["", "  ", "sk-abc", ""])
+    answers = iter(["", "  ", "sk-abc", "", ""])
     monkeypatch.setattr(builtins, "input", lambda _: next(answers))
 
     result = config.interactive_setup()
@@ -87,7 +87,7 @@ def test_load_config_empty_fields_use_defaults(monkeypatch, tmp_path):
 
 def test_load_config_first_run_triggers_setup(monkeypatch, tmp_path):
     _patch_paths(tmp_path, monkeypatch)
-    answers = iter(["sk-new", ""])
+    answers = iter(["sk-new", "", ""])
     monkeypatch.setattr(builtins, "input", lambda _: next(answers))
 
     result = config.load_config()

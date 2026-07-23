@@ -1,8 +1,10 @@
+import json
 import re
 import sys
 import time
 from pathlib import Path
 
+import httpx
 from openai import OpenAI
 
 from .srt_utils import compose_srt, merge_short_entries, parse_srt
@@ -79,14 +81,32 @@ def parse_response(text):
     return translations, summary, scene
 
 
-def call_api(client, model, messages, max_retries=5):
+class _UnwrapClient(httpx.Client):
+    def send(self, request, **kwargs):
+        response = super().send(request, **kwargs)
+        if "application/json" in response.headers.get("content-type", ""):
+            try:
+                body = response.json()
+                if isinstance(body, dict) and "data" in body and isinstance(body["data"], dict):
+                    response._content = json.dumps(body["data"]).encode()
+                    response.headers["content-length"] = str(len(response._content))
+            except Exception:
+                pass
+        return response
+
+
+def call_api(client, model, messages, base_url, max_retries=5):
     kwargs = {
         "model": model,
         "messages": messages,
         "timeout": 300,
-        "extra_body": {"thinking": {"type": "disabled"}},
         "temperature": 1.3,
     }
+
+    if "deepseek.com" in base_url:
+        kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
+    else:
+        kwargs["reasoning_effort"] = "none"
 
     for attempt in range(max_retries):
         try:
@@ -109,7 +129,8 @@ def translate_srt(
     max_retries=5,
     merge=True,
 ):
-    client = OpenAI(api_key=api_key, base_url=base_url)
+    base_url = base_url.removesuffix("/chat/completions").removesuffix("/completions")
+    client = OpenAI(api_key=api_key, base_url=base_url, http_client=_UnwrapClient())
 
     orig_entries = parse_srt(input_path)
 
@@ -166,7 +187,7 @@ def translate_srt(
                 file=sys.stderr,
                 flush=True,
             )
-            result, usage = call_api(client, model, messages)
+            result, usage = call_api(client, model, messages, base_url)
             if result is None:
                 continue
             parsed, summary, scene = parse_response(result)

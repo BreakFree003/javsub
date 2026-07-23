@@ -51,7 +51,10 @@ def interactive_setup():
         _write_template()
         return {"api_key": "", "base_url": "", "model": ""}
 
-    model = DEFAULT_MODEL
+    model = _prompt("模型名", default=DEFAULT_MODEL)
+    if model is None:
+        _write_template()
+        return {"api_key": "", "base_url": "", "model": ""}
 
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     content = (
